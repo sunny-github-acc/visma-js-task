@@ -43,6 +43,7 @@ const toppingsContainerEdit = document.getElementById(
 );
 
 let editElement;
+let deleteElement;
 let editFlag = false;
 let editID = "";
 let heatButtonsClasses = { button1: false, button2: false, button3: false };
@@ -292,7 +293,7 @@ function setPizza({
   const deleteButton = element.querySelector(".delete-button");
   const editButton = element.querySelector(".edit-button");
 
-  deleteButton.addEventListener("click", deletePizza);
+  deleteButton.addEventListener("click", openModal);
   editButton.addEventListener("click", editPizza);
 
   return element;
@@ -334,11 +335,10 @@ function clearPizzas() {
   window.sessionStorage.removeItem("list");
 }
 
-function deletePizza(e) {
-  const element = e.currentTarget.parentElement.parentElement.parentElement;
-  const id = element.dataset.id;
+function deletePizza() {
+  const id = deleteElement.dataset.id;
 
-  pizzaList.removeChild(element);
+  pizzaList.removeChild(deleteElement);
 
   if (pizzaList.children.length === 0) {
     pizzaContainer.classList.remove("show-container");
@@ -514,6 +514,7 @@ function setBackToDefault() {
   editID = "";
 
   setupClearButton();
+  closeModal();
 }
 
 function addToSessionStorage(id, value) {
@@ -676,4 +677,19 @@ function setHeatButtonEdit(button) {
     heatButtonsClassesEdit.button2 = true;
     heatButtonsClassesEdit.button3 = true;
   }
+}
+
+// Modal
+const modal = document.querySelector(".modal-overlay");
+const deleteButton = document.querySelector(".delete-button");
+const closeButton = document.querySelector(".close-button");
+
+function openModal(e) {
+  deleteElement = e.currentTarget.parentElement.parentElement.parentElement;
+
+  modal.classList.add("open-modal");
+}
+
+function closeModal() {
+  modal.classList.remove("open-modal");
 }
