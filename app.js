@@ -209,8 +209,7 @@ function savePizza(e) {
   editElement.remove();
   pizzaList.appendChild(setPizza(pizzaValues));
 
-  main.style.display = "grid";
-  mainEdit.style.display = "none";
+  goToMain();
 
   displayAlert("Pizza saved", "success");
 
@@ -359,7 +358,7 @@ function editPizza(e) {
   const price = dataset.price;
   const photo = dataset.photo;
   const toppings = dataset.toppings
-    // .replace(/\s/g, "")
+    .trim()
     .split("#key#")
     .filter((topping) => topping);
 
@@ -369,13 +368,35 @@ function editPizza(e) {
   pizzaPriceEdit.value = price;
   pizzaPhotoEdit.value = photo;
 
+  if (heat === "1") {
+    pizzaHeatButton1Edit.classList.add("active");
+  } else if (heat === "2") {
+    pizzaHeatButton1Edit.classList.add("active");
+    pizzaHeatButton2Edit.classList.add("active");
+  } else {
+    pizzaHeatButton1Edit.classList.add("active");
+    pizzaHeatButton2Edit.classList.add("active");
+    pizzaHeatButton3Edit.classList.add("active");
+  }
+
   setToppingsEdit(toppings);
 
   editFlag = true;
   editID = element.dataset.id;
 
-  mainEdit.style.display = "grid";
+  goToEdit();
+}
+
+function goToMain() {
+  mainEdit.style.display = "none";
+  main.style.display = "grid";
+  scrollToTop();
+}
+
+function goToEdit() {
   main.style.display = "none";
+  mainEdit.style.display = "grid";
+  scrollToTop();
 }
 
 function setToppings(toppings) {
@@ -401,10 +422,8 @@ function setToppingsEdit(toppings) {
   pizzaToppings.value = toppings[0];
   pizzaToppings2.value = toppings[1];
 
-  if (toppings.length > 2) {
-    for (let i = 2; i < toppings.length; i++) {
-      inputContainer.appendChild(createPizzaToppingsInput(toppings[i], true));
-    }
+  for (let i = 2; i < toppings.length; i++) {
+    inputContainer.appendChild(createPizzaToppingsInput(toppings[i], true));
   }
 }
 
@@ -458,10 +477,10 @@ function setupPizzas() {
 function setupClearButton() {
   if (pizzaList.firstChild) {
     clearButton.removeEventListener("click", goToForm);
-    clearButton.addEventListener("click", clearPizzas);
+    clearButton.addEventListener("click", openModalAll);
     clearButton.innerHTML = "clear pizzas";
   } else {
-    clearButton.removeEventListener("click", clearPizzas);
+    clearButton.removeEventListener("click", openModalAll);
     clearButton.addEventListener("click", goToForm);
     clearButton.innerHTML = "add pizza";
   }
@@ -483,6 +502,9 @@ function createListPizza(id, value) {
 function setBackToDefault() {
   const optionalToppings = document.querySelectorAll(
     ".pizza-toppings-optional",
+  );
+  const optionalToppingsEdit = document.querySelectorAll(
+    ".pizza-toppings-optional-edit",
   );
 
   pizzaName.value = "";
@@ -510,11 +532,16 @@ function setBackToDefault() {
     topping.parentNode.removeChild(topping);
   }
 
+  for (let topping of optionalToppingsEdit) {
+    topping.parentNode.removeChild(topping);
+  }
+
   editFlag = false;
   editID = "";
 
   setupClearButton();
   closeModal();
+  closeModalAll();
 }
 
 function addToSessionStorage(id, value) {
@@ -681,15 +708,28 @@ function setHeatButtonEdit(button) {
 
 // Modal
 const modal = document.querySelector(".modal-overlay");
+const modalAll = document.querySelector(".modal-overlay-all");
 const deleteButton = document.querySelector(".delete-button");
 const closeButton = document.querySelector(".close-button");
 
 function openModal(e) {
   deleteElement = e.currentTarget.parentElement.parentElement.parentElement;
-
   modal.classList.add("open-modal");
+}
+
+function openModalAll() {
+  modalAll.classList.add("open-modal");
 }
 
 function closeModal() {
   modal.classList.remove("open-modal");
+}
+
+function closeModalAll() {
+  modalAll.classList.remove("open-modal");
+}
+
+function cancelEdit() {
+  setBackToDefault();
+  goToMain();
 }

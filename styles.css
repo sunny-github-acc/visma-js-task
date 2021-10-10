@@ -114,6 +114,16 @@
      display: flex;
  }
 
+ .transparent {
+     background: transparent !important;
+     border: none !important;
+ }
+
+ .transparent:hover {
+     background: var(--light-grey) !important;
+     border: none !important;
+ }
+
  .section {
      padding: 3rem 0;
      width: 60vw;
@@ -162,7 +172,6 @@
      display: none
  }
 
-
  .button {
      color: var(--black);
      text-transform: uppercase;
@@ -201,6 +210,13 @@
      opacity: 1;
  }
 
+ .edit-buttons {
+     display: flex;
+ }
+
+ .edit-buttons .button {
+     margin-right: 10px;
+ }
 
  #submit-button {
      margin-top: 40px;
@@ -245,7 +261,8 @@
      color: var(--black);
  }
 
- .main-content {
+ .main-content,
+ .main-content-edit {
      border-bottom-left-radius: var(--radius);
      border-bottom-right-radius: var(--radius);
      padding: 2rem 3rem;
@@ -264,18 +281,22 @@
      display: block;
  }
 
- .form-control {
+
+ .form-control,
+ .form-control-edit {
      display: flex;
      flex-direction: column;
      justify-content: flex-start;
      align-items: flex-start;
  }
 
- .form-control label {
+ .form-control label,
+ .form-control-edit label {
      margin-top: 20px;
  }
 
- .form-control input {
+ .form-control input,
+ .form-control-edit input {
      font-size: 16px;
      line-height: 28px;
      padding: 8px 16px;
@@ -287,6 +308,11 @@
      outline-color: var(--grey);
      background-color: var(--white);
      box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
+ }
+
+ #pizza-heat,
+ #pizza-heat-edit {
+     display: none;
  }
 
  .image-container {
@@ -386,7 +412,8 @@
      border: 1px solid var(--green-secondary);
  }
 
- .modal-overlay {
+ .modal-overlay,
+ .modal-overlay-all {
      position: fixed;
      top: 0;
      left: 0;
