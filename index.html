@@ -16,29 +16,35 @@
   <body>
     <section class="section">
       <div class="title">
-        <h2>Pizzeria menu manager</h2>
+        <h1>Pizzeria menu manager</h1>
       </div>
 
       <div class="main-center section-center">
         <article class="main">
-          <div class="btn-container">
-            <button class="tab-btn active left" data-id="form">
-              Add a Pizza
+          <div class="tab-button-container">
+            <button
+              id="tab-button-form"
+              class="tab-button active left"
+              data-id="form"
+            >
+              Add Pizza
             </button>
-            <button class="tab-btn right" data-id="pizza-list">
-              Pizzas' Menu
+            <button
+              id="tab-button-menu"
+              class="tab-button right"
+              data-id="pizza-menu-container"
+            >
+              Pizzas Menu
             </button>
           </div>
 
           <div class="main-content">
             <div class="content active" id="form" class="form-container">
               <form class="pizza-form">
-                <p class="alert"></p>
-
-                <h3>Add a Pizza</h3>
+                <h2>Add Pizza</h2>
 
                 <div class="form-control">
-                  <label for="pizza-name"><h4>Pizza Name*</h4></label>
+                  <label for="pizza-name"><h3>Pizza Name*</h3></label>
                   <input
                     type="text"
                     id="pizza-name"
@@ -47,17 +53,17 @@
                     maxlength="30"
                   />
 
-                  <label for="pizza-name"><h4>Pizza Price*</h4></label>
+                  <label for="pizza-name"><h3>Pizza Price €*</h3></label>
                   <input
                     id="pizza-price"
-                    placeholder="e.g. 10eu"
+                    placeholder="e.g. 10"
                     type="number"
                     required
                     min="0.01"
                     step="0.01"
                   />
 
-                  <label for="pizza-heat"><h4>Pizza Heat</h4></label>
+                  <label for="pizza-heat"><h3>Pizza Heat</h3></label>
                   <input
                     id="pizza-heat"
                     placeholder="e.g. 2"
@@ -65,36 +71,65 @@
                     min="1"
                     max="3"
                     step="1"
+                    style="display: none"
                   />
+                  <div class="pizza-heat-buttons">
+                    <button
+                      id="pizza-heat-button-1"
+                      class="button heat heat-1"
+                      type="button"
+                      onclick="setHeatButton(1)"
+                    >
+                      <img src="./assets/flame1.png" />
+                    </button>
+                    <button
+                      id="pizza-heat-button-2"
+                      class="button heat heat-2"
+                      type="button"
+                      onclick="setHeatButton(2)"
+                    >
+                      <img src="./assets/flame1.png" />
+                    </button>
+                    <button
+                      id="pizza-heat-button-3"
+                      class="button heat heat-3"
+                      type="button"
+                      onclick="setHeatButton(3)"
+                    >
+                      <img src="./assets/flame1.png" />
+                    </button>
+                  </div>
 
                   <div id="toppings-container">
-                    <label for="pizza-toppings"><h4>Pizza Toppings*</h4></label>
-                    <input
-                      type="text"
-                      id="pizza-toppings"
-                      class="pizza-toppings"
-                      placeholder="e.g. Pickles"
-                      maxlength="30"
-                      required
-                    />
-                    <input
-                      type="text"
-                      id="pizza-toppings2"
-                      class="pizza-toppings"
-                      placeholder="e.g. Onions"
-                      maxlength="30"
-                      required
-                    />
+                    <label for="pizza-toppings"><h3>Pizza Toppings*</h3></label>
+
+                    <div id="input-container">
+                      <input
+                        type="text"
+                        id="pizza-toppings"
+                        value="Tomato sauce"
+                        class="pizza-toppings"
+                        placeholder="e.g. Tomato sauce"
+                        maxlength="30"
+                        required
+                      />
+
+                      <input
+                        type="text"
+                        id="pizza-toppings2"
+                        value="Cheese"
+                        class="pizza-toppings"
+                        placeholder="e.g. Cheese"
+                        maxlength="30"
+                        required
+                      />
+                    </div>
                   </div>
-                  <button
-                    class="submit-btn button"
-                    type="button"
-                    onclick="addTopping()"
-                  >
+                  <button class="button" type="button" onclick="addTopping()">
                     Add More Toppings
                   </button>
 
-                  <label for="pizza-photo"><h4>Pizza Photo</h4></label>
+                  <label for="pizza-photo"><h3>Pizza Image</h3></label>
                   <input
                     type="text"
                     id="pizza-photo"
@@ -102,20 +137,156 @@
                     type="text"
                   />
 
-                  <button type="submit" class="submit-btn button">
+                  <button type="submit" id="submit-button" class="button">
                     Add Pizza
                   </button>
+
+                  <div class="flex">
+                    <h3 class="alert-form"></h3>
+                  </div>
                 </div>
               </form>
             </div>
 
-            <div class="content" id="pizza-list">
-              <h4>pizzas</h4>
+            <div class="content" id="pizza-menu-container">
+              <h2>Pizza Menu</h2>
+
+              <div class="flex">
+                <h3 class="alert">Pizza pizza</h3>
+              </div>
 
               <div class="pizza-container">
                 <div class="pizza-list"></div>
-                <button class="clear-btn button">clear items</button>
+                <button class="clear-button button">clear items</button>
               </div>
+            </div>
+          </div>
+        </article>
+
+        <article class="main-edit">
+          <div class="main-content-edit">
+            <div
+              class="edit-content active"
+              id="edit-form"
+              class="form-container-edit"
+            >
+              <form class="pizza-form-edit">
+                <h2>Edit Pizza</h2>
+
+                <div class="form-control-edit">
+                  <label for="pizza-name-edit"><h3>Pizza Name*</h3></label>
+                  <input
+                    type="text"
+                    id="pizza-name-edit"
+                    placeholder="e.g. Margarita"
+                    required
+                    maxlength="30"
+                  />
+
+                  <label for="pizza-name-edit"><h3>Pizza Price €*</h3></label>
+                  <input
+                    id="pizza-price-edit"
+                    placeholder="e.g. 10"
+                    type="number"
+                    required
+                    min="0.01"
+                    step="0.01"
+                  />
+
+                  <label for="pizza-heat-edit"><h3>Pizza Heat</h3></label>
+                  <input
+                    id="pizza-heat-edit"
+                    placeholder="e.g. 2"
+                    type="number"
+                    min="1"
+                    max="3"
+                    step="1"
+                  />
+
+                  <div class="pizza-heat-buttons-edit">
+                    <button class="button">
+                      <img src="./assets/pencil.png" />
+                    </button>
+                  </div>
+                  <div class="pizza-heat-buttons-edit">
+                    <button
+                      id="pizza-heat-button-1-edit"
+                      class="button heat heat-1"
+                      type="button"
+                      onclick="setHeatButtonEdit(1)"
+                    >
+                      <img src="./assets/flame1.png" />
+                    </button>
+                    <button
+                      id="pizza-heat-button-2-edit"
+                      class="button heat heat-2"
+                      type="button"
+                      onclick="setHeatButtonEdit(2)"
+                    >
+                      <img src="./assets/flame1.png" />
+                    </button>
+                    <button
+                      id="pizza-heat-button-3-edit"
+                      class="button heat heat-3"
+                      type="button"
+                      onclick="setHeatButtonEdit(3)"
+                    >
+                      <img src="./assets/flame1.png" />
+                    </button>
+                  </div>
+
+                  <div id="toppings-container-edit">
+                    <label for="pizza-toppings-edit"
+                      ><h3>Pizza Toppings*</h3></label
+                    >
+
+                    <div id="input-container-edit">
+                      <input
+                        type="text"
+                        id="pizza-toppings-edit"
+                        value="Tomato sauce"
+                        class="pizza-toppings-edit"
+                        placeholder="e.g. Tomato sauce"
+                        maxlength="30"
+                        required
+                      />
+
+                      <input
+                        type="text"
+                        id="pizza-toppings2-edit"
+                        value="Cheese"
+                        class="pizza-toppings-edit"
+                        placeholder="e.g. Cheese"
+                        maxlength="30"
+                        required
+                      />
+                    </div>
+                  </div>
+                  <button
+                    class="button"
+                    type="button"
+                    onclick="addToppingEdit()"
+                  >
+                    Add More Toppings
+                  </button>
+
+                  <label for="pizza-photo-edit"><h3>Pizza Image</h3></label>
+                  <input
+                    type="text"
+                    id="pizza-photo-edit"
+                    placeholder="e.g. https://image.jpg"
+                    type="text"
+                  />
+
+                  <button type="submit" id="submit-button-edit" class="button">
+                    Save Pizza
+                  </button>
+
+                  <div class="flex">
+                    <h3 class="alert-form"></h3>
+                  </div>
+                </div>
+              </form>
             </div>
           </div>
         </article>

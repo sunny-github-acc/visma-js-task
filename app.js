@@ -1,46 +1,134 @@
 const main = document.querySelector(".main");
-const buttons = document.querySelectorAll(".tab-btn");
-const articles = document.querySelectorAll(".content");
+const tabButtonContainer = document.querySelector(".tab-button-container");
+const tabButtons = document.querySelectorAll(".tab-button");
+const tabScreens = document.querySelectorAll(".content");
 const form = document.querySelector(".pizza-form");
 const alert = document.querySelector(".alert");
+const alertForm = document.querySelectorAll(".alert-form");
 const pizzaName = document.getElementById("pizza-name");
 const pizzaPrice = document.getElementById("pizza-price");
 const pizzaHeat = document.getElementById("pizza-heat");
 const pizzaToppings = document.getElementsByClassName("pizza-toppings");
 const pizzaPhoto = document.getElementById("pizza-photo");
+const pizzaHeatButtons = document.querySelector(".pizza-heat-buttons");
+const pizzaHeatButton1 = document.getElementById("pizza-heat-button-1");
+const pizzaHeatButton2 = document.getElementById("pizza-heat-button-2");
+const pizzaHeatButton3 = document.getElementById("pizza-heat-button-3");
 const toppingsContainer = document.getElementById("toppings-container");
-const submitBtn = document.querySelector(".submit-btn");
-const container = document.querySelector(".pizza-container");
-const list = document.querySelector(".pizza-list");
-const clearBtn = document.querySelector(".clear-btn");
+const submitButton = document.getElementById("submit-button");
+const pizzaContainer = document.querySelector(".pizza-container");
+const pizzaList = document.querySelector(".pizza-list");
+const clearButton = document.querySelector(".clear-button");
+const mainEdit = document.querySelector(".main-edit");
+const formEdit = document.querySelector(".pizza-form-edit");
+const pizzaNameEdit = document.getElementById("pizza-name-edit");
+const pizzaPriceEdit = document.getElementById("pizza-price-edit");
+const pizzaHeatEdit = document.getElementById("pizza-heat-edit");
+const pizzaToppingsEdit = document.getElementsByClassName(
+  "pizza-toppings-edit",
+);
+const pizzaPhotoEdit = document.getElementById("pizza-photo-edit");
+const pizzaHeatButtonsEdit = document.querySelector(".pizza-heat-buttons-edit");
+const pizzaHeatButton1Edit = document.getElementById(
+  "pizza-heat-button-1-edit",
+);
+const pizzaHeatButton2Edit = document.getElementById(
+  "pizza-heat-button-2-edit",
+);
+const pizzaHeatButton3Edit = document.getElementById(
+  "pizza-heat-button-3-edit",
+);
+const toppingsContainerEdit = document.getElementById(
+  "toppings-container-edit",
+);
 
 let editElement;
 let editFlag = false;
 let editID = "";
+let heatButtonsClasses = { button1: false, button2: false, button3: false };
+let heatButtonsClassesEdit = { button1: false, button2: false, button3: false };
 
 // Tabs
-main.addEventListener("click", function (e) {
-  const id = e.target.dataset.id;
+tabButtonContainer.addEventListener("click", toggleTabs);
 
-  if (id === "pizza-list" || id === "form") {
+function toggleTabs(e, path) {
+  let id, target;
+
+  if (e || !path) {
+    target = e.target;
+    id = target.dataset.id;
+  } else if (path === "pizza-menu-container") {
+    target = document.getElementById("tab-button-menu");
+    id = path;
+  } else if (path === "form") {
+    target = document.getElementById("tab-button-form");
+    id = path;
+  }
+
+  if (id === "pizza-menu-container" || id === "form") {
     const element = document.getElementById(id);
 
-    buttons.forEach((btn) => btn.classList.remove("active"));
-    e.target.classList.add("active");
+    tabButtons.forEach((button) => button.classList.remove("active"));
+    target.classList.add("active");
 
-    articles.forEach((article) => article.classList.remove("active"));
+    tabScreens.forEach((article) => article.classList.remove("active"));
     element.classList.add("active");
   }
-});
+}
+
+function goToForm() {
+  toggleTabs(null, "form");
+  scrollToTop();
+}
+
+function goToPizzaMenu() {
+  toggleTabs(null, "pizza-menu-container");
+  scrollToTop();
+}
+
+function scrollToTop() {
+  window.scrollTo({
+    top: 0,
+    behavior: "smooth",
+  });
+}
 
 // Form
-form.addEventListener("submit", addItem);
+form.addEventListener("submit", addPizza);
+formEdit.addEventListener("submit", savePizza);
+pizzaHeatButton1.addEventListener("mouseenter", handleHeatButtonsHoveringIn);
+pizzaHeatButton2.addEventListener("mouseenter", handleHeatButtonsHoveringIn);
+pizzaHeatButton3.addEventListener("mouseenter", handleHeatButtonsHoveringIn);
+pizzaHeatButton1.addEventListener("mouseleave", handleHeatButtonsHoveringOut);
+pizzaHeatButton2.addEventListener("mouseleave", handleHeatButtonsHoveringOut);
+pizzaHeatButton3.addEventListener("mouseleave", handleHeatButtonsHoveringOut);
+pizzaHeatButton1Edit.addEventListener(
+  "mouseenter",
+  handleHeatButtonsHoveringInEdit,
+);
+pizzaHeatButton2Edit.addEventListener(
+  "mouseenter",
+  handleHeatButtonsHoveringInEdit,
+);
+pizzaHeatButton3Edit.addEventListener(
+  "mouseenter",
+  handleHeatButtonsHoveringInEdit,
+);
+pizzaHeatButton1Edit.addEventListener(
+  "mouseleave",
+  handleHeatButtonsHoveringOutEdit,
+);
+pizzaHeatButton2Edit.addEventListener(
+  "mouseleave",
+  handleHeatButtonsHoveringOutEdit,
+);
+pizzaHeatButton3Edit.addEventListener(
+  "mouseleave",
+  handleHeatButtonsHoveringOutEdit,
+);
+window.addEventListener("DOMContentLoaded", setupPizzas);
 
-clearBtn.addEventListener("click", clearItems);
-
-window.addEventListener("DOMContentLoaded", setupItems);
-
-function addItem(e) {
+function addPizza(e) {
   e.preventDefault();
 
   const pizzaNameValue = pizzaName.value;
@@ -55,217 +143,537 @@ function addItem(e) {
     pizzaToppingsValue.push(topping.value);
   }
 
-  if (!editFlag) {
-    const element = document.createElement("article");
-    let attr = document.createAttribute("data-id");
-    attr.value = id;
-    element.setAttributeNode(attr);
-    element.classList.add("pizza-item");
-    element.innerHTML = `<p class="title">${pizzaNameValue}</p>
-    <p class="title">${pizzaPriceValue}</p>
-    <p class="title">${pizzaHeatValue}</p>
-    <p class="title">${pizzaToppingsValue.join(", ")}</p> 
-    <p class="title">${pizzaPhotoValue}</p>
+  const pizzaValues = {
+    pizzaNameValue,
+    pizzaPriceValue,
+    pizzaHeatValue,
+    pizzaPhotoValue,
+    pizzaToppingsValue,
+    id,
+  };
 
-            <div class="btn-container">
-            
-              <button type="button" class="edit-btn button">
-                <i class="fas fa-edit"></i>
-              </button>
-               
-              <button type="button" class="delete-btn button">
-                <i class="fas fa-trash"></i>
-              </button>
-            </div>
-          `;
-
-    const deleteBtn = element.querySelector(".delete-btn");
-    deleteBtn.addEventListener("click", deleteItem);
-    const editBtn = element.querySelector(".edit-btn");
-    editBtn.addEventListener("click", editItem);
-
-    list.appendChild(element);
-
-    displayAlert("Pizza added to the menu", "success");
-
-    container.classList.add("show-container");
-
-    addToLocalStorage(id, pizzaNameValue);
-    addToLocalStorage(id, pizzaPriceValue);
-    addToLocalStorage(id, pizzaHeatValue);
-    addToLocalStorage(id, pizzaPhotoValue);
-    addToLocalStorage(id, pizzaToppingsValue);
-
-    setBackToDefault();
-  } else if (value !== "" && editFlag) {
-    editElement.innerHTML = value;
-    displayAlert("Pizza changed", "success");
-
-    editLocalStorage(editID, value);
-
-    setBackToDefault();
-  } else {
-    displayAlert("Please enter pizza info", "danger");
+  for (let pizza of pizzaList.querySelectorAll(".pizza-name-title .name")) {
+    if (pizzaNameValue === pizza.innerHTML) {
+      return displayAlertForm("Please enter a unique pizza name", "danger");
+    }
   }
+
+  const element = setPizza(pizzaValues);
+
+  pizzaList.appendChild(element);
+
+  displayAlert("Pizza added to the menu", "success");
+
+  pizzaContainer.classList.add("show-container");
+
+  addToSessionStorage(id, pizzaValues);
+
+  setBackToDefault();
+
+  goToPizzaMenu();
+}
+
+function savePizza(e) {
+  e.preventDefault();
+
+  const pizzaNameValue = pizzaNameEdit.value;
+  const pizzaPriceValue = pizzaPriceEdit.value;
+  const pizzaHeatValue = pizzaHeatEdit.value;
+  const pizzaPhotoValue = pizzaPhotoEdit.value;
+
+  let pizzaToppingsValue = [];
+
+  for (let topping of pizzaToppingsEdit) {
+    pizzaToppingsValue.push(topping.value);
+  }
+
+  const pizzaValues = {
+    pizzaNameValue,
+    pizzaPriceValue,
+    pizzaHeatValue,
+    pizzaPhotoValue,
+    pizzaToppingsValue,
+    id: editElement.dataset.id,
+  };
+
+  for (let pizza of pizzaList.querySelectorAll(".pizza-name-title .name")) {
+    if (
+      pizzaNameValue === pizza.innerHTML &&
+      !pizza.parentElement.parentElement.parentElement === editElement
+    ) {
+      return displayAlertForm("Please enter a unique pizza name", "danger");
+    }
+  }
+
+  editElement.remove();
+  pizzaList.appendChild(setPizza(pizzaValues));
+
+  main.style.display = "grid";
+  mainEdit.style.display = "none";
+
+  displayAlert("Pizza saved", "success");
+
+  editSessionStorage(editID, pizzaValues);
+
+  setBackToDefault();
+
+  goToPizzaMenu();
+}
+
+function setPizza({
+  pizzaNameValue,
+  pizzaHeatValue,
+  pizzaPriceValue,
+  pizzaPhotoValue,
+  pizzaToppingsValue,
+  id,
+}) {
+  const element = document.createElement("article");
+
+  let attr = document.createAttribute("data-id");
+
+  attr.value = id;
+  element.setAttributeNode(attr);
+  element.classList.add("pizza-item");
+  pizzaPhotoValue
+    ? (element.style.background =
+        "linear-gradient(0deg, rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0)), url(" +
+        pizzaPhotoValue +
+        ")")
+    : null;
+
+  element.innerHTML = `
+  <div>
+    <div class="button-container"> 
+      <button type="button" class="edit-button button"> 
+        <img src="./assets/pencil.png"/>
+      </button>
+      
+      <button type="button" class="delete-button button">
+        <img src="./assets/bin.png"/>
+      </button>
+    </div> 
+  </div>
+
+  <div
+    id="pizza-item-info"
+    data-name="${pizzaNameValue}" 
+    data-heat="${pizzaHeatValue}" 
+    data-toppings=" ${pizzaToppingsValue.join("#key#")}" 
+    data-price="${pizzaPriceValue}" 
+    data-photo="${pizzaPhotoValue}"
+  >
+    <h2 class='pizza-name-title'>
+     <span class='name'>${pizzaNameValue}</span>
+
+      ${
+        pizzaHeatValue
+          ? `
+              <img src='./assets/flame${pizzaHeatValue}.png' 
+                class='heat-icon' 
+                alt='heat icon'
+              /> 
+            `
+          : ""
+      }
+     
+    </h2> 
+
+    <h4 id="pizza-toppings-value" class='pizza-toppings-title'>
+      ${pizzaToppingsValue.join(", ")} 
+
+      <span id="pizza-price-value" class='dots-border'></span>
+      
+      €${pizzaPriceValue}
+    </h4>   
+  </div> 
+  `;
+
+  const deleteButton = element.querySelector(".delete-button");
+  const editButton = element.querySelector(".edit-button");
+
+  deleteButton.addEventListener("click", deletePizza);
+  editButton.addEventListener("click", editPizza);
+
+  return element;
 }
 
 function displayAlert(text, action) {
   alert.textContent = text;
   alert.classList.add(`alert-${action}`);
 
-  setTimeout(function () {
+  setTimeout(() => {
     alert.textContent = "";
     alert.classList.remove(`alert-${action}`);
   }, 2000);
 }
 
-function clearItems() {
-  const items = document.querySelectorAll(".pizza-item");
+function displayAlertForm(text, action) {
+  for (let alert of alertForm) {
+    alert.textContent = text;
+    alert.classList.add(`alert-${action}`);
 
-  if (items.length > 0) {
-    items.forEach(function (item) {
-      list.removeChild(item);
-    });
+    setTimeout(() => {
+      alert.textContent = "";
+      alert.classList.remove(`alert-${action}`);
+    }, 2000);
   }
-
-  container.classList.remove("show-container");
-  displayAlert("empty list", "danger");
-  setBackToDefault();
-  localStorage.removeItem("list");
 }
 
-function deleteItem(e) {
-  const element = e.currentTarget.parentElement.parentElement;
+function clearPizzas() {
+  const pizzas = document.querySelectorAll(".pizza-item");
+
+  if (pizzas.length > 0) {
+    pizzas.forEach((pizza) => pizzaList.removeChild(pizza));
+  }
+
+  pizzaContainer.classList.remove("show-container");
+
+  setBackToDefault();
+
+  window.sessionStorage.removeItem("list");
+}
+
+function deletePizza(e) {
+  const element = e.currentTarget.parentElement.parentElement.parentElement;
   const id = element.dataset.id;
 
-  list.removeChild(element);
+  pizzaList.removeChild(element);
 
-  if (list.children.length === 0) {
-    container.classList.remove("show-container");
+  if (pizzaList.children.length === 0) {
+    pizzaContainer.classList.remove("show-container");
   }
-  displayAlert("item removed", "danger");
+
+  displayAlert("Pizza removed", "danger");
 
   setBackToDefault();
 
-  removeFromLocalStorage(id);
+  removeFromSessionStorage(id);
 }
 
-function editItem(e) {
-  const element = e.currentTarget.parentElement.parentElement;
+function editPizza(e) {
+  const element = e.currentTarget.parentElement.parentElement.parentElement;
+  const dataset = element.querySelector("#pizza-item-info").dataset;
+  const name = dataset.name;
+  const heat = dataset.heat;
+  const price = dataset.price;
+  const photo = dataset.photo;
+  const toppings = dataset.toppings
+    // .replace(/\s/g, "")
+    .split("#key#")
+    .filter((topping) => topping);
 
-  editElement = e.currentTarget.parentElement.previousElementSibling;
+  editElement = element;
+  pizzaNameEdit.value = name;
+  pizzaHeatEdit.value = heat;
+  pizzaPriceEdit.value = price;
+  pizzaPhotoEdit.value = photo;
 
-  pizza.value = editElement.innerHTML;
+  setToppingsEdit(toppings);
+
   editFlag = true;
   editID = element.dataset.id;
-  //
-  submitBtn.textContent = "edit";
+
+  mainEdit.style.display = "grid";
+  main.style.display = "none";
+}
+
+function setToppings(toppings) {
+  const inputContainer = document.getElementById("input-container");
+  const pizzaToppings = document.getElementById("pizza-toppings");
+  const pizzaToppings2 = document.getElementById("pizza-toppings2");
+
+  pizzaToppings.value = toppings[0];
+  pizzaToppings2.value = toppings[1];
+
+  if (toppings.length > 2) {
+    for (let i = 2; i < toppings.length; i++) {
+      inputContainer.appendChild(createPizzaToppingsInput(toppings[i]));
+    }
+  }
+}
+
+function setToppingsEdit(toppings) {
+  const inputContainer = document.getElementById("input-container-edit");
+  const pizzaToppings = document.getElementById("pizza-toppings-edit");
+  const pizzaToppings2 = document.getElementById("pizza-toppings2-edit");
+
+  pizzaToppings.value = toppings[0];
+  pizzaToppings2.value = toppings[1];
+
+  if (toppings.length > 2) {
+    for (let i = 2; i < toppings.length; i++) {
+      inputContainer.appendChild(createPizzaToppingsInput(toppings[i], true));
+    }
+  }
+}
+
+function createPizzaToppingsInput(toppings, isEdit = false) {
+  const element = document.createElement("input");
+  const edit = isEdit ? "-edit" : "";
+
+  let type = document.createAttribute("type");
+  let value = document.createAttribute("value");
+  let placeholder = document.createAttribute("placeholder");
+  let maxlength = document.createAttribute("maxlength");
+
+  type.value = "text";
+  value.value = toppings || "";
+  placeholder.value = "e.g. Pickles";
+  maxlength.value = "30";
+
+  element.setAttributeNode(type);
+  element.setAttributeNode(value);
+  element.setAttributeNode(placeholder);
+  element.setAttributeNode(maxlength);
+  element.classList.add("pizza-toppings" + edit);
+  element.classList.add("pizza-toppings-optional" + edit);
+
+  return element;
+}
+
+function addTopping() {
+  toppingsContainer.appendChild(createPizzaToppingsInput());
+}
+
+function addToppingEdit() {
+  toppingsContainerEdit.appendChild(createPizzaToppingsInput("", true));
+}
+
+function setupPizzas() {
+  let items = getSessionStorage();
+
+  if (items.length > 0) {
+    items.forEach((item) => {
+      createListPizza(item.id, item.value);
+    });
+
+    pizzaContainer.classList.add("show-container");
+  }
+
+  setupClearButton();
+  scrollToTop();
+}
+
+function setupClearButton() {
+  if (pizzaList.firstChild) {
+    clearButton.removeEventListener("click", goToForm);
+    clearButton.addEventListener("click", clearPizzas);
+    clearButton.innerHTML = "clear pizzas";
+  } else {
+    clearButton.removeEventListener("click", clearPizzas);
+    clearButton.addEventListener("click", goToForm);
+    clearButton.innerHTML = "add pizza";
+  }
+}
+
+function createListPizza(id, value) {
+  const element = setPizza({
+    pizzaNameValue: value.pizzaNameValue,
+    pizzaHeatValue: value.pizzaHeatValue,
+    pizzaPriceValue: value.pizzaPriceValue,
+    pizzaPhotoValue: value.pizzaPhotoValue,
+    pizzaToppingsValue: value.pizzaToppingsValue,
+    id,
+  });
+
+  pizzaList.appendChild(element);
 }
 
 function setBackToDefault() {
+  const optionalToppings = document.querySelectorAll(
+    ".pizza-toppings-optional",
+  );
+
   pizzaName.value = "";
   pizzaPrice.value = "";
   pizzaHeat.value = "";
   pizzaPhoto.value = "";
+  pizzaNameEdit.value = "";
+  pizzaPriceEdit.value = "";
+  pizzaHeatEdit.value = "";
+  pizzaPhotoEdit.value = "";
 
   for (let topping of pizzaToppings) {
-    topping.value = "";
+    topping.id === "pizza-toppings"
+      ? (topping.value = "Tomato sauce")
+      : (topping.value = "Cheese");
+  }
+
+  for (let topping of pizzaToppingsEdit) {
+    topping.id === "pizza-toppings"
+      ? (topping.value = "Tomato sauce")
+      : (topping.value = "Cheese");
+  }
+
+  for (let topping of optionalToppings) {
+    topping.parentNode.removeChild(topping);
   }
 
   editFlag = false;
   editID = "";
-  submitBtn.textContent = "submit";
+
+  setupClearButton();
 }
 
-function addToLocalStorage(id, value) {
+function addToSessionStorage(id, value) {
   const pizza = { id, value };
-  let items = getLocalStorage();
+  let items = getSessionStorage();
   items.push(pizza);
-  localStorage.setItem("list", JSON.stringify(items));
+  window.sessionStorage.setItem("list", JSON.stringify(items));
 }
 
-function getLocalStorage() {
-  return localStorage.getItem("list")
-    ? JSON.parse(localStorage.getItem("list"))
+function getSessionStorage() {
+  return window.sessionStorage.getItem("list")
+    ? JSON.parse(window.sessionStorage.getItem("list"))
     : [];
 }
 
-function removeFromLocalStorage(id) {
-  let items = getLocalStorage();
+function removeFromSessionStorage(id) {
+  let items = getSessionStorage();
 
-  items = items.filter(function (item) {
+  items = items.filter((item) => {
     if (item.id !== id) {
       return item;
     }
   });
 
-  localStorage.setItem("list", JSON.stringify(items));
+  window.sessionStorage.setItem("list", JSON.stringify(items));
 }
-function editLocalStorage(id, value) {
-  let items = getLocalStorage();
 
-  items = items.map(function (item) {
+function editSessionStorage(id, value) {
+  let items = getSessionStorage();
+
+  items = items.map((item) => {
     if (item.id === id) {
       item.value = value;
     }
+
     return item;
   });
-  localStorage.setItem("list", JSON.stringify(items));
+
+  window.sessionStorage.setItem("list", JSON.stringify(items));
 }
 
-function setupItems() {
-  let items = getLocalStorage();
+function handleHeatButtonsHoveringIn(e) {
+  heatButtonsClasses.button1 = pizzaHeatButton1.classList.contains("active");
+  heatButtonsClasses.button2 = pizzaHeatButton2.classList.contains("active");
+  heatButtonsClasses.button3 = pizzaHeatButton3.classList.contains("active");
 
-  if (items.length > 0) {
-    items.forEach(function (item) {
-      createListItem(item.id, item.value);
-    });
-    container.classList.add("show-container");
+  if (e.target === pizzaHeatButton1) {
+    pizzaHeatButton1.classList.add("active");
+    pizzaHeatButton2.classList.remove("active");
+    pizzaHeatButton3.classList.remove("active");
+  } else if (e.target === pizzaHeatButton2) {
+    pizzaHeatButton1.classList.add("active");
+    pizzaHeatButton2.classList.add("active");
+    pizzaHeatButton3.classList.remove("active");
+  } else {
+    pizzaHeatButton1.classList.add("active");
+    pizzaHeatButton2.classList.add("active");
+    pizzaHeatButton3.classList.add("active");
   }
 }
 
-function createListItem(id, value) {
-  const element = document.createElement("article");
-  let attr = document.createAttribute("data-id");
-  attr.value = id;
-  element.setAttributeNode(attr);
-  element.classList.add("pizza-item");
-  element.innerHTML = `<p class="title">${value}</p>
-            <div class="btn-container">
-              <!-- edit btn -->
-              <button type="button" class="edit-btn button">
-                <i class="fas fa-edit"></i>
-              </button>
-              <!-- delete btn -->
-              <button type="button" class="delete-btn button">
-                <i class="fas fa-trash"></i>
-              </button>
-            </div>
-          `;
-
-  const deleteBtn = element.querySelector(".delete-btn");
-  deleteBtn.addEventListener("click", deleteItem);
-  const editBtn = element.querySelector(".edit-btn");
-  editBtn.addEventListener("click", editItem);
-
-  list.appendChild(element);
+function handleHeatButtonsHoveringOut() {
+  heatButtonsClasses.button1
+    ? pizzaHeatButton1.classList.add("active")
+    : pizzaHeatButton1.classList.remove("active");
+  heatButtonsClasses.button2
+    ? pizzaHeatButton2.classList.add("active")
+    : pizzaHeatButton2.classList.remove("active");
+  heatButtonsClasses.button3
+    ? pizzaHeatButton3.classList.add("active")
+    : pizzaHeatButton3.classList.remove("active");
 }
 
-function addTopping() {
-  const element = document.createElement("input");
+function setHeatButton(button) {
+  if (button === 1) {
+    pizzaHeat.value = 1;
+    pizzaHeatButton1.classList.add("active");
+    pizzaHeatButton2.classList.remove("active");
+    pizzaHeatButton3.classList.remove("active");
+    heatButtonsClasses.button1 = true;
+    heatButtonsClasses.button2 = false;
+    heatButtonsClasses.button3 = false;
+  } else if (button === 2) {
+    pizzaHeat.value = 2;
+    pizzaHeatButton1.classList.add("active");
+    pizzaHeatButton2.classList.add("active");
+    pizzaHeatButton3.classList.remove("active");
+    heatButtonsClasses.button1 = true;
+    heatButtonsClasses.button2 = true;
+    heatButtonsClasses.button3 = false;
+  } else {
+    pizzaHeat.value = 3;
+    pizzaHeatButton1.classList.add("active");
+    pizzaHeatButton2.classList.add("active");
+    pizzaHeatButton3.classList.add("active");
+    heatButtonsClasses.button1 = true;
+    heatButtonsClasses.button2 = true;
+    heatButtonsClasses.button3 = true;
+  }
+}
 
-  let type = document.createAttribute("type");
-  let placeholder = document.createAttribute("placeholder");
-  let maxlength = document.createAttribute("maxlength");
+function handleHeatButtonsHoveringInEdit(e) {
+  heatButtonsClassesEdit.button1 =
+    pizzaHeatButton1Edit.classList.contains("active");
+  heatButtonsClassesEdit.button2 =
+    pizzaHeatButton2Edit.classList.contains("active");
+  heatButtonsClassesEdit.button3 =
+    pizzaHeatButton3Edit.classList.contains("active");
 
-  type.value = "text";
-  placeholder.value = "e.g. More cheese";
-  maxlength.value = "30";
+  if (e.target === pizzaHeatButton1) {
+    pizzaHeatButton1Edit.classList.add("active");
+    pizzaHeatButton2Edit.classList.remove("active");
+    pizzaHeatButton3Edit.classList.remove("active");
+  } else if (e.target === pizzaHeatButton2) {
+    pizzaHeatButton1Edit.classList.add("active");
+    pizzaHeatButton2Edit.classList.add("active");
+    pizzaHeatButton3Edit.classList.remove("active");
+  } else {
+    pizzaHeatButton1Edit.classList.add("active");
+    pizzaHeatButton2Edit.classList.add("active");
+    pizzaHeatButton3Edit.classList.add("active");
+  }
+}
 
-  element.setAttributeNode(type);
-  element.setAttributeNode(placeholder);
-  element.setAttributeNode(maxlength);
-  element.classList.add("pizza-toppings");
+function handleHeatButtonsHoveringOutEdit() {
+  heatButtonsClassesEdit.button1
+    ? pizzaHeatButton1Edit.classList.add("active")
+    : pizzaHeatButton1Edit.classList.remove("active");
+  heatButtonsClassesEdit.button2
+    ? pizzaHeatButton2Edit.classList.add("active")
+    : pizzaHeatButton2Edit.classList.remove("active");
+  heatButtonsClassesEdit.button3
+    ? pizzaHeatButton3Edit.classList.add("active")
+    : pizzaHeatButton3Edit.classList.remove("active");
+}
 
-  toppingsContainer.appendChild(element);
+function setHeatButtonEdit(button) {
+  if (button === 1) {
+    pizzaHeatEdit.value = 1;
+    pizzaHeatButton1Edit.classList.add("active");
+    pizzaHeatButton2Edit.classList.remove("active");
+    pizzaHeatButton3Edit.classList.remove("active");
+    heatButtonsClassesEdit.button1 = true;
+    heatButtonsClassesEdit.button2 = false;
+    heatButtonsClassesEdit.button3 = false;
+  } else if (button === 2) {
+    pizzaHeatEdit.value = 2;
+    pizzaHeatButton1Edit.classList.add("active");
+    pizzaHeatButton2Edit.classList.add("active");
+    pizzaHeatButton3Edit.classList.remove("active");
+    heatButtonsClassesEdit.button1 = true;
+    heatButtonsClassesEdit.button2 = true;
+    heatButtonsClassesEdit.button3 = false;
+  } else {
+    pizzaHeatEdit.value = 3;
+    pizzaHeatButton1Edit.classList.add("active");
+    pizzaHeatButton2Edit.classList.add("active");
+    pizzaHeatButton3Edit.classList.add("active");
+    heatButtonsClassesEdit.button1 = true;
+    heatButtonsClassesEdit.button2 = true;
+    heatButtonsClassesEdit.button3 = true;
+  }
 }
