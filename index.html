@@ -3,13 +3,8 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Pizzeria menu manager</title>
-    <!-- font-awesome -->
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.14.0/css/all.min.css"
-    />
-    <!-- styles -->
+    <title>Pizzeria menu manager</title> 
+    <link rel="icon" href="https://png.pngtree.com/png-clipart/20210311/original/pngtree-a-slice-of-yummy-pizza-png-image_5996325.jpg">
     <link rel="stylesheet" href="styles.css" />
   </head>
 
@@ -124,6 +119,7 @@
                       />
                     </div>
                   </div>
+
                   <button
                     class="button transparent"
                     type="button"
@@ -159,8 +155,15 @@
               </div>
 
               <div class="pizza-container">
-                <div class="pizza-list"></div>
-                <button class="clear-button button">Clear pizzas</button>
+                <div id='pizza-list' class="pizza-list"></div>
+
+                <div class="sorting-buttons">
+                    <button type='button' class="button" onclick="sortPizzas('name')">Sort by name</button>
+                    <button type='button' class="button" onclick="sortPizzas('price')">Sort by price</button>
+                    <button type='button' class="button" onclick="sortPizzas('heat')">Sort by heat</button>
+                </div>
+
+                <button class="clear-button button alert-danger">Clear pizzas</button>
               </div>
             </div>
           </div>
@@ -215,6 +218,7 @@
                     >
                       <img src="./assets/flame1.png" />
                     </button>
+
                     <button
                       id="pizza-heat-button-2-edit"
                       class="button heat heat-2"
@@ -223,6 +227,7 @@
                     >
                       <img src="./assets/flame1.png" />
                     </button>
+
                     <button
                       id="pizza-heat-button-3-edit"
                       class="button heat heat-3"
@@ -234,9 +239,9 @@
                   </div>
 
                   <div id="toppings-container-edit">
-                    <label for="pizza-toppings-edit"
-                      ><h3>Pizza Toppings*</h3></label
-                    >
+                    <label for="pizza-toppings-edit">
+                        <h3>Pizza Toppings*</h3>
+                    </label>
 
                     <div id="input-container-edit">
                       <input
@@ -260,6 +265,7 @@
                       />
                     </div>
                   </div>
+
                   <button
                     class="button"
                     type="button"
@@ -284,6 +290,7 @@
                     >
                       Save Pizza
                     </button>
+
                     <button
                       type="button"
                       class="button transparent"
@@ -305,6 +312,7 @@
         <div class="modal-overlay">
           <div class="modal-container">
             <h3>Are you sure you want to delete this pizza?</h3>
+
             <div class="buttons">
               <button
                 class="button modal-delete-button"
@@ -312,6 +320,7 @@
               >
                 Delete
               </button>
+
               <button
                 class="button modal-cancel-button transparent"
                 onclick="closeModal()"
@@ -325,6 +334,7 @@
         <div class="modal-overlay-all">
             <div class="modal-container">
               <h3>Are you sure you want to delete all the pizzas?</h3>
+
               <div class="buttons">
                 <button
                   class="button modal-delete-button"
@@ -332,6 +342,7 @@
                 >
                   Delete
                 </button>
+
                 <button
                   class="button modal-cancel-button transparent"
                   onclick="closeModalAll()"
@@ -341,8 +352,8 @@
               </div>
             </div>
       </div>
-    </section>
-    <!-- javascript -->
+    </section> 
+    
     <script src="app.js"></script>
   </body>
 </html>

@@ -1,7 +1,54 @@
-const main = document.querySelector(".main");
+// Tabs
 const tabButtonContainer = document.querySelector(".tab-button-container");
 const tabButtons = document.querySelectorAll(".tab-button");
 const tabScreens = document.querySelectorAll(".content");
+
+tabButtonContainer.addEventListener("click", toggleTabs);
+
+function toggleTabs(e, path) {
+  let id, target;
+
+  if (e || !path) {
+    target = e.target;
+    id = target.dataset.id;
+  } else if (path === "pizza-menu-container") {
+    target = document.getElementById("tab-button-menu");
+    id = path;
+  } else if (path === "form") {
+    target = document.getElementById("tab-button-form");
+    id = path;
+  }
+
+  if (id === "pizza-menu-container" || id === "form") {
+    const element = document.getElementById(id);
+
+    tabButtons.forEach((button) => button.classList.remove("active"));
+    target.classList.add("active");
+
+    tabScreens.forEach((tab) => tab.classList.remove("active"));
+    element.classList.add("active");
+  }
+}
+
+function goToForm() {
+  toggleTabs(null, "form");
+  scrollToTop();
+}
+
+function goToPizzaMenu() {
+  toggleTabs(null, "pizza-menu-container");
+  scrollToTop();
+}
+
+function scrollToTop() {
+  window.scrollTo({
+    top: 0,
+    behavior: "smooth",
+  });
+}
+
+// Form
+const main = document.querySelector(".main");
 const form = document.querySelector(".pizza-form");
 const alert = document.querySelector(".alert");
 const alertForm = document.querySelectorAll(".alert-form");
@@ -19,6 +66,7 @@ const submitButton = document.getElementById("submit-button");
 const pizzaContainer = document.querySelector(".pizza-container");
 const pizzaList = document.querySelector(".pizza-list");
 const clearButton = document.querySelector(".clear-button");
+const sortingButtons = document.querySelector(".sorting-buttons");
 const mainEdit = document.querySelector(".main-edit");
 const formEdit = document.querySelector(".pizza-form-edit");
 const pizzaNameEdit = document.getElementById("pizza-name-edit");
@@ -48,53 +96,8 @@ let editFlag = false;
 let editID = "";
 let heatButtonsClasses = { button1: false, button2: false, button3: false };
 let heatButtonsClassesEdit = { button1: false, button2: false, button3: false };
+let sortFlags = { name: false, price: false, heat: false };
 
-// Tabs
-tabButtonContainer.addEventListener("click", toggleTabs);
-
-function toggleTabs(e, path) {
-  let id, target;
-
-  if (e || !path) {
-    target = e.target;
-    id = target.dataset.id;
-  } else if (path === "pizza-menu-container") {
-    target = document.getElementById("tab-button-menu");
-    id = path;
-  } else if (path === "form") {
-    target = document.getElementById("tab-button-form");
-    id = path;
-  }
-
-  if (id === "pizza-menu-container" || id === "form") {
-    const element = document.getElementById(id);
-
-    tabButtons.forEach((button) => button.classList.remove("active"));
-    target.classList.add("active");
-
-    tabScreens.forEach((article) => article.classList.remove("active"));
-    element.classList.add("active");
-  }
-}
-
-function goToForm() {
-  toggleTabs(null, "form");
-  scrollToTop();
-}
-
-function goToPizzaMenu() {
-  toggleTabs(null, "pizza-menu-container");
-  scrollToTop();
-}
-
-function scrollToTop() {
-  window.scrollTo({
-    top: 0,
-    behavior: "smooth",
-  });
-}
-
-// Form
 form.addEventListener("submit", addPizza);
 formEdit.addEventListener("submit", savePizza);
 pizzaHeatButton1.addEventListener("mouseenter", handleHeatButtonsHoveringIn);
@@ -207,6 +210,7 @@ function savePizza(e) {
   }
 
   editElement.remove();
+
   pizzaList.appendChild(setPizza(pizzaValues));
 
   goToMain();
@@ -282,9 +286,9 @@ function setPizza({
     <h4 id="pizza-toppings-value" class='pizza-toppings-title'>
       ${pizzaToppingsValue.join(", ")} 
 
-      <span id="pizza-price-value" class='dots-border'></span>
+      <span class='dots-border'></span>
       
-      €${pizzaPriceValue}
+      <span id="pizza-price-value">€${pizzaPriceValue}</span>
     </h4>   
   </div> 
   `;
@@ -463,15 +467,15 @@ function setupPizzas() {
   let items = getSessionStorage();
 
   if (items.length > 0) {
-    items.forEach((item) => {
-      createListPizza(item.id, item.value);
-    });
-
+    items.forEach((item) => createListPizza(item.id, item.value));
     pizzaContainer.classList.add("show-container");
   }
 
   setupClearButton();
+
   scrollToTop();
+
+  sortPizzas();
 }
 
 function setupClearButton() {
@@ -479,10 +483,12 @@ function setupClearButton() {
     clearButton.removeEventListener("click", goToForm);
     clearButton.addEventListener("click", openModalAll);
     clearButton.innerHTML = "clear pizzas";
+    sortingButtons.classList.remove("hidden");
   } else {
     clearButton.removeEventListener("click", openModalAll);
     clearButton.addEventListener("click", goToForm);
     clearButton.innerHTML = "add pizza";
+    sortingButtons.classList.add("hidden");
   }
 }
 
@@ -540,14 +546,19 @@ function setBackToDefault() {
   editID = "";
 
   setupClearButton();
+
   closeModal();
+
   closeModalAll();
 }
 
 function addToSessionStorage(id, value) {
   const pizza = { id, value };
+
   let items = getSessionStorage();
+
   items.push(pizza);
+
   window.sessionStorage.setItem("list", JSON.stringify(items));
 }
 
@@ -732,4 +743,176 @@ function closeModalAll() {
 function cancelEdit() {
   setBackToDefault();
   goToMain();
+}
+
+function sortPizzas(type) {
+  const parentId = "pizza-list";
+  const tagClass = "pizza-item";
+
+  switch (type) {
+    case "name":
+      sortElements({
+        parentId,
+        tagClass,
+        descending: sortFlags.name,
+        sortByName: true,
+      });
+
+      sortFlags.name = !sortFlags.name;
+      sortFlags.price = false;
+      sortFlags.heat = false;
+
+      break;
+    case "price":
+      sortElements({
+        parentId,
+        tagClass,
+        descending: sortFlags.price,
+        sortByPrice: true,
+      });
+
+      sortFlags.price = !sortFlags.price;
+      sortFlags.name = false;
+      sortFlags.heat = false;
+
+      break;
+    case "heat":
+      sortElements({
+        parentId,
+        tagClass,
+        descending: sortFlags.heat,
+        sortByHeat: true,
+      });
+
+      sortFlags.heat = !sortFlags.heat;
+      sortFlags.name = false;
+      sortFlags.price = false;
+
+      break;
+    default:
+      sortElements({
+        parentId,
+        tagClass,
+        descending: sortFlags.name,
+        sortByName: true,
+      });
+
+      sortFlags.name = !sortFlags.name;
+      sortFlags.price = false;
+      sortFlags.heat = false;
+  }
+}
+
+function sortElements({
+  parentId,
+  tagClass,
+  sortByName = false,
+  sortByPrice = false,
+  sortByHeat = false,
+  descending = false,
+}) {
+  const parent = document.getElementById(parentId);
+  const data = [];
+  const order = [];
+
+  let itemsToSort;
+  let item;
+  let placeHolder;
+  let i;
+
+  if (parent.getElementsByClassName) {
+    itemsToSort = parent.getElementsByClassName(tagClass);
+  } else {
+    itemsToSort = getElementsByClassName(tagClass, "*", parent);
+  }
+
+  for (i = 0; i < itemsToSort.length; i++) {
+    item = itemsToSort[i];
+    placeHolder = document.createElement(item.tagName);
+    item.parentNode.insertBefore(placeHolder, item);
+    order.push(placeHolder);
+    data.push({ obj: item, text: strTrim(item.innerHTML) });
+  }
+
+  if (sortByName) {
+    data.sort((a, b) => {
+      if (descending) {
+        return a.obj
+          .querySelector("#pizza-item-info")
+          .dataset.name.localeCompare(
+            b.obj.querySelector("#pizza-item-info").dataset.name,
+          );
+      } else {
+        return b.obj
+          .querySelector("#pizza-item-info")
+          .dataset.name.localeCompare(
+            a.obj.querySelector("#pizza-item-info").dataset.name,
+          );
+      }
+    });
+  } else if (sortByPrice) {
+    data.sort((a, b) => {
+      if (descending) {
+        return a.obj
+          .querySelector("#pizza-item-info")
+          .dataset.price.localeCompare(
+            b.obj.querySelector("#pizza-item-info").dataset.price,
+          );
+      } else {
+        return b.obj
+          .querySelector("#pizza-item-info")
+          .dataset.price.localeCompare(
+            a.obj.querySelector("#pizza-item-info").dataset.price,
+          );
+      }
+    });
+  } else if (sortByHeat) {
+    data.sort((a, b) => {
+      if (descending) {
+        return a.obj
+          .querySelector("#pizza-item-info")
+          .dataset.heat.localeCompare(
+            b.obj.querySelector("#pizza-item-info").dataset.heat,
+          );
+      } else {
+        return b.obj
+          .querySelector("#pizza-item-info")
+          .dataset.heat.localeCompare(
+            a.obj.querySelector("#pizza-item-info").dataset.heat,
+          );
+      }
+    });
+  }
+
+  for (i = 0; i < data.length; i++) {
+    item = data[i].obj;
+    placeHolder = order[i];
+    placeHolder.parentNode.insertBefore(item, placeHolder);
+    placeHolder.parentNode.removeChild(placeHolder);
+  }
+}
+
+function strTrim(str) {
+  return str.replace(/^\s+/, "").replace(/\s+$/, "");
+}
+
+function getElementsByClassName(className, tag, elm) {
+  elm = elm || document;
+  tag = tag || "*";
+
+  const testClass = new RegExp("(^|\\s)" + className + "(\\s|$)");
+  const elements =
+    tag == "*" && elm.all ? elm.all : elm.getElementsByTagName(tag);
+  const returnElements = [];
+  const length = elements.length;
+
+  let current;
+
+  for (let i = 0; i < length; i++) {
+    current = elements[i];
+    if (testClass.test(current.className)) {
+      returnElements.push(current);
+    }
+  }
+  return returnElements;
 }

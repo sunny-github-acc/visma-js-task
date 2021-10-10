@@ -198,13 +198,11 @@
      height: 15px;
  }
 
-
  .button.heat {
      background: transparent;
      border: none;
      opacity: 0.5;
  }
-
 
  .button.heat.active {
      opacity: 1;
@@ -261,6 +259,10 @@
      color: var(--black);
  }
 
+ .tab-button.active {
+     background: var(--white);
+ }
+
  .main-content,
  .main-content-edit {
      border-bottom-left-radius: var(--radius);
@@ -273,14 +275,9 @@
      display: none;
  }
 
- .tab-button.active {
-     background: var(--white);
- }
-
  .content.active {
      display: block;
  }
-
 
  .form-control,
  .form-control-edit {
@@ -374,7 +371,6 @@
      margin: 0 5px;
  }
 
-
  .alert,
  .alert-form {
      margin-bottom: 0;
@@ -405,6 +401,11 @@
  .alert-danger {
      background: var(--red);
      border: 1px solid rgba(var(--red-bare), 0.2);
+ }
+
+ .alert-danger:hover {
+     background: rgba(var(--red-bare), 0.2);
+     border: 1px solid rgba(var(--red-bare), 0.3);
  }
 
  .alert-success {
@@ -457,4 +458,8 @@
  .modal-delete-button:hover {
      background: rgba(var(--red-bare), 0.2);
      border: 1px solid rgba(var(--red-bare), 0.3);
+ }
+
+ .sorting-buttons.hidden {
+     display: none;
  }
